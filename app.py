@@ -35,9 +35,13 @@ def contact():
 def predict():
     data = request.get_json()
     url = data.get('url')
+    if not url:
+        return jsonify({"result": "Invalid URL"})
 
     features = extract_features(url)
-    prediction = model.predict(features)[0]
+    import pandas as pd
+    features_df = pd.DataFrame(features, columns=['length', 'https', 'ip', 'at'])
+    prediction = model.predict(features_df)[0]
 
     result = "Safe" if prediction == 0 else "Phishing"
     return jsonify({"result": result})
